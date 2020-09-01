@@ -13,6 +13,6 @@ public class Main {
 	}
 	
 	public static void log(String msg) {
-		System.out.println("Server | "+msg);
+		System.out.println("INFO | "+msg);
 	}
 }

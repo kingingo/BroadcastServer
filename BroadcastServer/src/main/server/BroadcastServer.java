@@ -53,16 +53,16 @@ public class BroadcastServer implements Runnable{
 				e.printStackTrace();
 			}
 			
-			for(Client client : this.clients) 
-				client.close();
+			for(int i = 0; i < this.clients.size(); i++)
+				this.clients.get(i).close();
 			
 			Main.log("server stopped...");
 		}
 	}
 	
 	public void receive(Client sender, Packet packet) {
-		for(Client client : this.clients) {
-			client.write(packet);
+		for(int i = 0; i < this.clients.size(); i++) {
+			this.clients.get(i).write(packet);
 		}
 	}
 	
