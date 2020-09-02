@@ -4,9 +4,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.UUID;
 
 import lombok.Getter;
 import main.Main;
+import main.api.events.Event;
+import main.api.events.EventManager;
+import main.api.events.events.PacketReceiveEvent;
+import main.api.events.events.PacketSendEvent;
+import main.api.packet.Packet;
+import main.api.packet.UnknownPacket;
 
 public class Client implements Runnable{
 
@@ -17,11 +25,25 @@ public class Client implements Runnable{
 	private DataOutputStream output;
 	@Getter
 	private String name;
+	private UUID uuid = UUID.randomUUID();
 	
 	public Client(Socket socket) throws IOException {
 		this.socket = socket;
-		this.input = new DataInputStream(socket.getInputStream());
-		this.output = new DataOutputStream(socket.getOutputStream());
+		init();
+	}
+	
+	public Client(String name, String host, int port) throws UnknownHostException, IOException {
+		this.socket = new Socket(host, port);
+		this.name = name;
+		init();
+		
+		this.output.writeUTF(this.name);
+		this.output.flush();
+	}
+	
+	private void init() throws IOException {
+		this.input = new DataInputStream(this.socket.getInputStream());
+		this.output = new DataOutputStream(this.socket.getOutputStream());
 	}
 	
 	public void close() {
@@ -46,27 +68,37 @@ public class Client implements Runnable{
 				byte[] data = new byte[length];
 				this.input.read(data, 0, length);
 				
-				Packet packet = new Packet(data,id);
+				Packet packet = new UnknownPacket(id, data);
 				Main.log(this+" -> "+packet.getId() + "(bytes:"+packet.getData().length+")");
-				Main.server.receive(this, packet);
+				
+				EventManager.callEvent(new PacketReceiveEvent(packet,this));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	public boolean equals(Client client) {
+		return uuid.compareTo(client.uuid) == 0;
+	}
+	
 	public boolean write(Packet packet) {
 		try {
-			byte[] packetBytes = packet.getData();
-			this.output.writeInt(packetBytes.length);
-			this.output.writeInt(packet.getId());
-			this.output.write(packetBytes, 0, packetBytes.length);
-			this.output.flush();
-			return true;
+			PacketSendEvent event = new PacketSendEvent(packet, this);
+			EventManager.callEvent(event);
+			
+			if(!event.isCancelled()) {
+				byte[] packetBytes = packet.toByteArray();
+				this.output.writeInt(packetBytes.length);
+				this.output.writeInt(packet.getId());
+				this.output.write(packetBytes, 0, packetBytes.length);
+				this.output.flush();
+				return true;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
 		}
+		return false;
 	}
 	
 	public String toString() {

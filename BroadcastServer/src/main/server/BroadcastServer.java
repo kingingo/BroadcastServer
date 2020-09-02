@@ -8,10 +8,14 @@ import java.util.ArrayList;
 
 import lombok.Getter;
 import main.Main;
+import main.api.events.EventHandler;
+import main.api.events.EventListener;
+import main.api.events.EventManager;
+import main.api.events.events.PacketReceiveEvent;
+import main.api.packet.Packet;
 import main.client.Client;
-import main.client.Packet;
 
-public class BroadcastServer implements Runnable{
+public class BroadcastServer implements Runnable, EventListener{
 
 	@Getter
 	private ArrayList<Client> clients = new ArrayList<Client>();
@@ -25,7 +29,7 @@ public class BroadcastServer implements Runnable{
 	public BroadcastServer(int port) {
 		this.thread = new Thread(this);
 		this.port = port;
-		
+		EventManager.register(this);
 		start();
 	}
 	
@@ -57,12 +61,18 @@ public class BroadcastServer implements Runnable{
 				this.clients.get(i).close();
 			
 			Main.log("server stopped...");
+			EventManager.unregister(this);
 		}
 	}
 	
-	public void receive(Client sender, Packet packet) {
+	@EventHandler
+	public void receive(PacketReceiveEvent ev) {
+		
+		Client client;
 		for(int i = 0; i < this.clients.size(); i++) {
-			this.clients.get(i).write(packet);
+			client = this.clients.get(i);
+			if(!ev.getClient().equals(client))
+				client.write(ev.getPacket());
 		}
 	}
 	
