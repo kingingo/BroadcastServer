@@ -12,7 +12,6 @@ import main.client.Connector;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PacketReceiveEvent extends Event{
-	private Packet packet;
+public class ClientDisconnectEvent extends Event{
 	private Connector connector;
 }

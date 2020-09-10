@@ -11,6 +11,7 @@ import main.Main;
 import main.api.events.EventHandler;
 import main.api.events.EventListener;
 import main.api.events.EventManager;
+import main.api.events.events.ClientDisconnectEvent;
 import main.api.events.events.PacketReceiveEvent;
 import main.api.packet.Packet;
 import main.client.Client;
@@ -65,15 +66,21 @@ public class BroadcastServer implements Runnable, EventListener{
 		}
 	}
 	
+//	@EventHandler
+//	public void receive(PacketReceiveEvent ev) {
+//		
+//		Client client;
+//		for(int i = 0; i < this.clients.size(); i++) {
+//			client = this.clients.get(i);
+//			if(!ev.getConnector().equals(client))
+//				client.write(ev.getPacket());
+//		}
+//	}
+	
 	@EventHandler
-	public void receive(PacketReceiveEvent ev) {
-		
-		Client client;
-		for(int i = 0; i < this.clients.size(); i++) {
-			client = this.clients.get(i);
-			if(!ev.getClient().equals(client))
-				client.write(ev.getPacket());
-		}
+	public void disconnect(ClientDisconnectEvent ev) {
+		this.clients.remove(ev.getConnector());
+		Main.log("Client "+ev.getConnector()+" disconnected");
 	}
 	
 	@Override
