@@ -14,7 +14,7 @@ public class Main {
 		Terminal.loadCommands();
 		Terminal.getInstance();
 		lobbyController = new LobbyController();
-		server = new BroadcastServer(6000);
+		server = new BroadcastServer(6001);
 	}
 	
 	public static void log(String msg) {
