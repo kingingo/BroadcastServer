@@ -89,9 +89,7 @@ public class Connector implements Runnable{
 						byte[] data = new byte[length];
 						this.input.read(data, 0, length);
 						
-						Packet packet = new UnknownPacket(id, data);
-						Main.log(this+" -> "+packet.getId() + "(bytes:"+packet.getData().length+")");
-						
+						Packet packet = Packet.create(id, data);
 						for(int i = 0; i < this.listeners.size(); i++) 
 							if(this.listeners.get(i).handle(packet))break;
 						
