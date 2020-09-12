@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -66,6 +67,8 @@ public class Connector implements Runnable{
 	}
 	
 	public void close() {
+		System.out.println("CLOSEE!!!! "+getName());
+		
 		if(active) {
 			this.active=false;
 			try {
@@ -91,7 +94,6 @@ public class Connector implements Runnable{
 						this.name = this.input.readUTF();
 						Main.log(this + " is connected");
 						EventManager.callEvent(new ClientConnectEvent(this));
-						write(new PingPacket());
 					} else {
 						int length = this.input.readInt();
 						int id = this.input.readInt();
@@ -101,14 +103,10 @@ public class Connector implements Runnable{
 						
 						Packet packet = Packet.create(id, data);
 						
-						if(packet instanceof PongPacket) {
-							write(new PingPacket());
-						}else {
-							for(int i = 0; i < this.listeners.size(); i++) 
-								if(this.listeners.get(i).handle(packet))break;
-							
-							EventManager.callEvent(new PacketReceiveEvent(packet,this));
-						}
+						for(int i = 0; i < this.listeners.size(); i++) 
+							if(this.listeners.get(i).handle(packet))break;
+						
+						EventManager.callEvent(new PacketReceiveEvent(packet,this));
 					}
 				}else {
 					Thread.sleep(10);
@@ -140,6 +138,8 @@ public class Connector implements Runnable{
 				this.output.flush();
 				return true;
 			}
+		}catch (SocketException e) {
+			close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
