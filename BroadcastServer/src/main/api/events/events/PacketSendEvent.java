@@ -19,4 +19,9 @@ public class PacketSendEvent extends Event implements Cancellable{
 		this.packet = packet;
 		this.connector = connector;
 	}
+	
+	@SuppressWarnings({ "unchecked", "FinalStaticMethod" })
+	public <P extends Packet> P getPacket(Class<P> clazz){
+		return ((P) packet);
+	}
 }

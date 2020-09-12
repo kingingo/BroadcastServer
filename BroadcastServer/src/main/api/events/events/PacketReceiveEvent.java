@@ -15,4 +15,9 @@ import main.client.connector.Connector;
 public class PacketReceiveEvent extends Event{
 	private Packet packet;
 	private Connector connector;
+	
+	@SuppressWarnings({ "unchecked", "FinalStaticMethod" })
+	public <P extends Packet> P getPacket(Class<P> clazz){
+		return ((P) packet);
+	}
 }
