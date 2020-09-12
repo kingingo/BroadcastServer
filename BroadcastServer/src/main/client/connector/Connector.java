@@ -22,6 +22,8 @@ import main.lobby.packets.client.LobbyCreatePacket;
 
 public class Connector implements Runnable{
 
+	public static boolean log = false;
+	
 	@Getter
 	protected Socket socket;
 	private boolean active = false;
@@ -96,6 +98,9 @@ public class Connector implements Runnable{
 						Packet packet = Packet.create(id, data);
 						for(int i = 0; i < this.listeners.size(); i++) 
 							if(this.listeners.get(i).handle(packet))break;
+						
+						
+						if(log)System.out.println("Received Packet "+packet.getPacketName());
 						
 						EventManager.callEvent(new PacketReceiveEvent(packet,this));
 					}
