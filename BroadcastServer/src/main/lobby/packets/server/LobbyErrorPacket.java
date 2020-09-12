@@ -35,4 +35,8 @@ public class LobbyErrorPacket extends Packet{
 	public void writeToOutput(DataOutputStream out) throws IOException {
 		out.writeInt(status);
 	}
+	
+	public String toString() {
+		return "StatusCode: "+status;
+	}
 }

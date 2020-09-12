@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
+import main.Main;
 import main.api.events.EventHandler;
 import main.api.events.EventListener;
 import main.api.events.EventManager;
@@ -42,6 +43,7 @@ public class Lobby implements EventListener{
 			return;
 		}
 
+		Main.log(client+" entered "+name);
 		this.clients.add(client);
 		write(new LobbyPlayersPacket(getClientnames()));
 	}
@@ -68,6 +70,7 @@ public class Lobby implements EventListener{
 	public void rec(PacketReceiveEvent ev) {
 		Client client = (Client)ev.getConnector();
 		if(this.clients.contains(client) && ev.getPacket() instanceof LobbyLeavePacket){
+			Main.log(client+" leaved "+name);
 			this.clients.remove(client);
 			write(new LobbyPlayersPacket(getClientnames()));
 		}else if(ev.getPacket() instanceof LobbyUpdatePacket){
@@ -88,6 +91,7 @@ public class Lobby implements EventListener{
 	public void disconnect(ClientDisconnectEvent ev) {
 		if(clients.contains((Client)ev.getConnector())) {
 			clients.remove((Client) ev.getConnector());
+			Main.log(ev.getConnector()+" leaved "+name);
 		}
 	}
 }

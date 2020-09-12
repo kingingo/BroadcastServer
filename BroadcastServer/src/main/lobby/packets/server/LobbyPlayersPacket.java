@@ -22,6 +22,7 @@ public class LobbyPlayersPacket extends Packet{
 	
 	@Override
 	public void parseFromInput(DataInputStream in) throws IOException {
+		this.players = new ArrayList<String>();
 		int length = in.readInt();
 		for(int i = 0; i < length; i++)
 			this.players.add(in.readUTF());
