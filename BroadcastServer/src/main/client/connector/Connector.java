@@ -15,10 +15,9 @@ import main.api.events.events.ClientDisconnectEvent;
 import main.api.events.events.PacketReceiveEvent;
 import main.api.events.events.PacketSendEvent;
 import main.api.packet.Packet;
-import main.api.packet.UnknownPacket;
-import main.client.connector.futures.BaseProgressFuture;
 import main.client.connector.futures.WaitForPacketProgressFuture;
-import main.lobby.packets.client.LobbyCreatePacket;
+import main.lobby.packets.client.PongPacket;
+import main.lobby.packets.server.PingPacket;
 
 public class Connector implements Runnable{
 
@@ -83,11 +82,16 @@ public class Connector implements Runnable{
 	public void run() {
 		try {
 			while(active && this.input != null) {
-				if(this.input.available() > 0) {
+				if(!this.socket.isConnected()) {
+					System.out.println("LOST CONNECTION TO "+getName());
+					close();
+					break;
+				}else if(this.input.available() > 0) {
 					if(this.name == null) {
 						this.name = this.input.readUTF();
 						Main.log(this + " is connected");
 						EventManager.callEvent(new ClientConnectEvent(this));
+						write(new PingPacket());
 					} else {
 						int length = this.input.readInt();
 						int id = this.input.readInt();
@@ -96,17 +100,23 @@ public class Connector implements Runnable{
 						this.input.read(data, 0, length);
 						
 						Packet packet = Packet.create(id, data);
-						for(int i = 0; i < this.listeners.size(); i++) 
-							if(this.listeners.get(i).handle(packet))break;
 						
-						
-						if(log)System.out.println("Received Packet "+packet.getPacketName());
-						
-						EventManager.callEvent(new PacketReceiveEvent(packet,this));
+						if(packet instanceof PongPacket) {
+							write(new PingPacket());
+						}else {
+							for(int i = 0; i < this.listeners.size(); i++) 
+								if(this.listeners.get(i).handle(packet))break;
+							
+							EventManager.callEvent(new PacketReceiveEvent(packet,this));
+						}
 					}
+				}else {
+					Thread.sleep(10);
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}finally {
 			close();

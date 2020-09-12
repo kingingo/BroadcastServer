@@ -25,7 +25,8 @@ public class Lobby implements EventListener{
 	private ArrayList<Client> clients = new ArrayList<Client>();
 	@Getter
 	private String name;
-	private LobbySettings settings;
+	private String owner;
+	private byte[] settings;
 	
 	public Lobby(String name) {
 		this.name = name;
@@ -43,9 +44,13 @@ public class Lobby implements EventListener{
 			return;
 		}
 
+		if(clients.size() == 0) {
+			this.owner = client.getName();
+		}
+		
 		Main.log(client+" entered "+name);
 		this.clients.add(client);
-		write(new LobbyPlayersPacket(getClientnames()));
+		write(new LobbyPlayersPacket(name,owner, getClientnames()));
 	}
 	
 	public ArrayList<String> getClientnames(){
@@ -72,11 +77,11 @@ public class Lobby implements EventListener{
 		if(this.clients.contains(client) && ev.getPacket() instanceof LobbyLeavePacket){
 			Main.log(client+" leaved "+name);
 			this.clients.remove(client);
-			write(new LobbyPlayersPacket(getClientnames()));
+			write(new LobbyPlayersPacket(name,owner, getClientnames()));
 		}else if(ev.getPacket() instanceof LobbyUpdatePacket){
 			LobbyUpdatePacket packet = (LobbyUpdatePacket)ev.getPacket();
 			
-			this.settings=packet.getSettings();
+			this.settings=packet.getArr();
 			update(Arrays.asList(client));
 		} else if(!Packet.KnowPacket(ev.getPacket())){
 			write(ev.getPacket(), Arrays.asList(client));
@@ -92,6 +97,10 @@ public class Lobby implements EventListener{
 		if(clients.contains((Client)ev.getConnector())) {
 			clients.remove((Client) ev.getConnector());
 			Main.log(ev.getConnector()+" leaved "+name);
+			
+			if(clients.isEmpty()) {
+				Main.lobbyController.closeLobby(name);
+			}
 		}
 	}
 }

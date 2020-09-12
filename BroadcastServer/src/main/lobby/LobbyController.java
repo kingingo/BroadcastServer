@@ -29,7 +29,7 @@ public class LobbyController implements EventListener{
 		
 		if(lobby != null) {
 			lobby.close();
-			this.lobbys.remove(this);
+			this.lobbys.remove(name.toLowerCase());
 			return true;
 		}
 		return false;

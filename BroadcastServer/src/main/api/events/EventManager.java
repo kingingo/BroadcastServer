@@ -12,6 +12,7 @@ public class EventManager {
 	
 	//unregestiert die Class
 	public static boolean unregister(Class c){
+		System.out.println("UNREGISTER "+c.getSimpleName());
 		EventListener listener;
 		for(int i = 0; i<handlers.size(); i++) {
 			listener = ((EventListener) handlers.keySet().toArray()[i]);
@@ -24,6 +25,7 @@ public class EventManager {
 	}
 	
 	public static boolean unregister(EventListener listener) {
+		System.out.println("UNREGISTER1 "+listener.getClass().getSimpleName());
 		if(handlers.containsKey(listener)) {
 			handlers.remove(listener);
 			return true;
@@ -51,13 +53,16 @@ public class EventManager {
 	
 	//Feuert das Event ab
 	public static void callEvent(final Event event) {
-        for (EventListener listener : getHandlers().keySet()) {
-        	if(getHandlers().get(listener) == null) {
-        		System.out.println(listener.getClass().getSimpleName()+" doesn't have an array?!");
-        		continue;
-        	}
-        	
+		EventListener listener;
+        for (int a = 0; a < handlers.size(); a++) {
+        	listener = (EventListener) handlers.keySet().toArray()[a];
             for (int i = 0; i<EventPriority.values().length; i++) {
+            	
+	            	if(getHandlers().get(listener) == null) {
+	            		System.out.println(listener.getClass().getSimpleName()+" doesn't have an array?!");
+	            		break;
+	            	}
+            	
             		if(getHandlers().get(listener).containsKey(i) && !getHandlers().get(listener).get(i).isEmpty()){
             			for(Method method : getHandlers().get(listener).get(i)){
             				if (!event.getClass().getSimpleName().equals(method.getParameterTypes()[0].getSimpleName())) continue;
