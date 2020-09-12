@@ -11,6 +11,7 @@ public class StopCommand implements CommandExecutor{
 		Main.server.stop();
 		Main.log("Terminal closed.");
 		Terminal.getInstance().stop();
+		System.exit(0);
 	}
 
 }

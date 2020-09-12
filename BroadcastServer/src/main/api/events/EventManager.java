@@ -12,11 +12,14 @@ public class EventManager {
 	
 	//unregestiert die Class
 	public static boolean unregister(Class c){
-		for(int i = 0; i<handlers.size(); i++)
-			if( ((EventListener) handlers.keySet().toArray()[i]).getClass().equals(c)){
-				handlers.remove(i);
+		EventListener listener;
+		for(int i = 0; i<handlers.size(); i++) {
+			listener = ((EventListener) handlers.keySet().toArray()[i]);
+			if( listener.getClass().equals(c)){
+				handlers.remove(listener);
 				return true;
 			}
+		}
 		return false;
 	}
 	
@@ -52,6 +55,7 @@ public class EventManager {
             for (int i = 0; i<EventPriority.values().length; i++) {
 
             		if(listener==null)System.out.println("listener NULL");
+            		if(getHandlers().get(listener) == null)System.out.println("getHandlers().get(listener) NULL");
             		if(getHandlers().get(listener).containsKey(i) && getHandlers().get(listener).get(i) == null)System.out.println("getHandlers().get(listener).get(i) NULL");
             	
             		if(getHandlers().get(listener).containsKey(i) && !getHandlers().get(listener).get(i).isEmpty()){
