@@ -16,7 +16,6 @@ import main.api.packet.Packet;
 import main.api.packet.UnknownPacket;
 
 public class Connector implements Runnable{
-	public static boolean SERVER = false;
 
 	@Getter
 	protected Socket socket;
@@ -33,6 +32,10 @@ public class Connector implements Runnable{
 		this.input = new DataInputStream(this.socket.getInputStream());
 		this.output = new DataOutputStream(this.socket.getOutputStream());
 	}
+	
+	public boolean isConnected(){
+		return this.socket != null && this.socket.isConnected();
+	}	
 	
 	protected void start() {
 		this.thread = new Thread(this);
