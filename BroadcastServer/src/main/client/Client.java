@@ -8,6 +8,7 @@ import lombok.Setter;
 import main.Main;
 import main.api.events.EventManager;
 import main.api.events.events.ClientConnectEvent;
+import main.client.connector.Connector;
 import main.lobby.Lobby;
 
 public class Client extends Connector{

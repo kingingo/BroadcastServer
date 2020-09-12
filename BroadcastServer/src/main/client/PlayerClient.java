@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 
 import main.api.events.EventManager;
 import main.api.events.events.ClientConnectEvent;
+import main.client.connector.Connector;
 
 public class PlayerClient extends Connector{
 

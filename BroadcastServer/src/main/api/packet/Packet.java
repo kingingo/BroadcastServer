@@ -51,6 +51,15 @@ public abstract class Packet implements IData{
 		for(String packet : packet_ids.keySet())Main.log(packet+" -> "+packet_ids.get(packet));
 	}
 	
+	public static int getId(Class<? extends Packet> clazz) {
+		for(String id : packets.keySet()) {
+			if(packets.get(id) == clazz) {
+				return Integer.valueOf(id);
+			}
+		}
+		return -1;
+	}
+	
 	public static boolean KnowPacket(Packet packet) {
 		try {
 			getPacketName(packet.getId());

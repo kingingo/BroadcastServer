@@ -7,7 +7,7 @@ import lombok.Setter;
 import main.api.events.Event;
 import main.api.packet.Packet;
 import main.client.Client;
-import main.client.Connector;
+import main.client.connector.Connector;
 
 @Getter
 @Setter

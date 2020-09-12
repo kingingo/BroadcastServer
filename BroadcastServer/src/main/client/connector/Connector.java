@@ -1,9 +1,10 @@
-package main.client;
+package main.client.connector;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import lombok.Getter;
@@ -14,6 +15,9 @@ import main.api.events.events.PacketReceiveEvent;
 import main.api.events.events.PacketSendEvent;
 import main.api.packet.Packet;
 import main.api.packet.UnknownPacket;
+import main.client.connector.futures.BaseProgressFuture;
+import main.client.connector.futures.WaitForPacketProgressFuture;
+import main.lobby.packets.client.LobbyCreatePacket;
 
 public class Connector implements Runnable{
 
@@ -22,6 +26,8 @@ public class Connector implements Runnable{
 	
 	protected DataInputStream input;
 	protected DataOutputStream output;
+	private ArrayList<PacketListener> listeners = new ArrayList<PacketListener>();
+	
 	@Getter
 	protected String name;
 	protected UUID uuid = UUID.randomUUID();
@@ -31,6 +37,19 @@ public class Connector implements Runnable{
 		this.socket = socket;
 		this.input = new DataInputStream(this.socket.getInputStream());
 		this.output = new DataOutputStream(this.socket.getOutputStream());
+	}
+	
+	public <T extends Packet> WaitForPacketProgressFuture<T> createWaitFor(Class<? extends Packet> clazz){
+		WaitForPacketProgressFuture<T> waitFor = new WaitForPacketProgressFuture<T>(this, clazz);
+		return waitFor;
+	}
+	
+	public void unregister(PacketListener listener) {
+		this.listeners.remove(listener);
+	}
+	
+	public void register(PacketListener listener) {
+		this.listeners.add(listener);
 	}
 	
 	public boolean isConnected(){
@@ -64,6 +83,9 @@ public class Connector implements Runnable{
 				
 				Packet packet = new UnknownPacket(id, data);
 				Main.log(this+" -> "+packet.getId() + "(bytes:"+packet.getData().length+")");
+				
+				for(int i = 0; i < this.listeners.size(); i++) 
+					if(this.listeners.get(i).handle(packet))break;
 				
 				EventManager.callEvent(new PacketReceiveEvent(packet,this));
 			}
