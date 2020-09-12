@@ -24,6 +24,7 @@ public class Connector implements Runnable{
 
 	@Getter
 	protected Socket socket;
+	private boolean active = false;
 	
 	protected DataInputStream input;
 	protected DataOutputStream output;
@@ -58,25 +59,28 @@ public class Connector implements Runnable{
 	}	
 	
 	protected void start() {
+		this.active = true;
 		this.thread = new Thread(this);
 		this.thread.start();
 	}
 	
 	public void close() {
-		try {
-			this.socket.close();
-			this.input.close();
-			this.output.close();
-			EventManager.callEvent(new ClientDisconnectEvent(this));
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(active) {
+			this.active=false;
+			try {
+				this.socket.close();
+				this.input.close();
+				this.output.close();
+				EventManager.callEvent(new ClientDisconnectEvent(this));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	public void run() {
 		try {
-			
-			while(this.input != null) {
+			while(active && this.input != null) {
 				if(this.input.available() > 0) {
 					if(this.name == null) {
 						this.name = this.input.readUTF();
