@@ -19,6 +19,7 @@ import main.Main;
 
 public abstract class Packet implements IData{
 
+	@Getter
 	private static final HashMap<String,Class<? extends Packet>> packets = new HashMap<String, Class<? extends Packet>>();
 	private static final HashMap<String, Integer> packet_ids = new HashMap<>();
 	@Getter
