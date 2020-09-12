@@ -95,6 +95,6 @@ public class Connector implements Runnable{
 	}
 	
 	public String toString() {
-		return this.name.isBlank() ? this.socket.getInetAddress().toString() : this.name;
+		return this.name != null ? this.socket.getInetAddress().toString() : this.name;
 	}
 }

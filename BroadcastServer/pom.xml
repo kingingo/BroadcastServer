@@ -71,8 +71,8 @@
 	                <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
 	                <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
 	                <includes><include>**/*</include></includes>
-	                <repositoryName>YOUR-REPOSITORY-NAME</repositoryName>      <!-- github repo name -->
-	                <repositoryOwner>YOUR-GITHUB-USERNAME</repositoryOwner>    <!-- github username  -->
+	                <repositoryName>BroadcastServer</repositoryName>      <!-- github repo name -->
+	                <repositoryOwner>kingingo</repositoryOwner>    <!-- github username  -->
 	            </configuration>
 	            <executions>
 	              <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
