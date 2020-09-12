@@ -9,15 +9,16 @@ public class WaitForPacketProgressFuture<T extends Packet> extends BaseProgressF
 	private int packetId = -1;
 	private Connector connector;
 	
-	public WaitForPacketProgressFuture(Connector connector, Class<? extends Packet> clazz) {
-		this(connector,Packet.getId(clazz));
+	public WaitForPacketProgressFuture(int timeout, Connector connector, Class<? extends Packet> clazz) {
+		this(timeout,connector,Packet.getId(clazz));
 	}
 	
-	public WaitForPacketProgressFuture(Connector connector, String packetname) {
-		this(connector,Packet.getId(packetname));
+	public WaitForPacketProgressFuture(int timeout, Connector connector, String packetname) {
+		this(timeout,connector,Packet.getId(packetname));
 	}
 	
-	public WaitForPacketProgressFuture(Connector connector, int packetId) {
+	public WaitForPacketProgressFuture(int timeout, Connector connector, int packetId) {
+		super(timeout);
 		this.packetId = packetId;
 		this.connector=connector;
 		this.connector.register(this);

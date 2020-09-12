@@ -40,7 +40,7 @@ public class Connector implements Runnable{
 	}
 	
 	public <T extends Packet> WaitForPacketProgressFuture<T> createWaitFor(Class<? extends Packet> clazz){
-		WaitForPacketProgressFuture<T> waitFor = new WaitForPacketProgressFuture<T>(this, clazz);
+		WaitForPacketProgressFuture<T> waitFor = new WaitForPacketProgressFuture<T>(1000 * 60 * 2,this, clazz); //2min TimeOut Default
 		return waitFor;
 	}
 	

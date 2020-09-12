@@ -11,6 +11,10 @@ public abstract class BaseProgressFuture<T extends Packet> implements ProgressFu
 	private T response = null;
 	private boolean hasRespond;
 	
+	protected BaseProgressFuture(int timeout) {
+		this.timeout = timeout;
+	}
+	
 	protected void done(T response) {
 		this.response = response;
 		this.hasRespond = true;
