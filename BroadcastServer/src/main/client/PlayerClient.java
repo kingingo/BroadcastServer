@@ -7,9 +7,9 @@ import java.net.UnknownHostException;
 import main.api.events.EventManager;
 import main.api.events.events.ClientConnectEvent;
 
-public class Player extends Connector{
+public class PlayerClient extends Connector{
 
-	protected Player(String name, String host, int port) throws UnknownHostException, IOException {
+	protected PlayerClient(String name, String host, int port) throws UnknownHostException, IOException {
 		super(new Socket(host, port));
 		this.name = name;
 		this.output.writeUTF(this.name);
