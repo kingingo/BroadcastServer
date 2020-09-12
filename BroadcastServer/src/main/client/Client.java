@@ -19,9 +19,6 @@ public class Client extends Connector{
 	
 	public Client(Socket socket) throws IOException {
 		super(socket);
-		this.name = this.input.readUTF();
-		Main.log(this + " is connected");
-		EventManager.callEvent(new ClientConnectEvent(this));
 		start();
 	}
 

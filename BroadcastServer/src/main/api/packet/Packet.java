@@ -24,8 +24,12 @@ public abstract class Packet implements IData{
 	@Getter
 	private static int packetIdMax =1;
 	
-	public static void loadPackets() {
-		Reflections reflections = new Reflections( "main.api.packet.packets" );
+	public static void loadPackets(){
+		loadPackets("main.lobby.packets");
+	}	
+	
+	public static void loadPackets(String path) {
+		Reflections reflections = new Reflections( path );
 		List<Class<? extends Packet>> moduleClasses = new ArrayList<>( reflections.getSubTypesOf( Packet.class ) );
 
 		Collections.sort(moduleClasses, new Comparator<Class<? extends Packet>>() {

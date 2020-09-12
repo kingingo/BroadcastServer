@@ -18,7 +18,7 @@ public class LobbyUpdatePacket extends Packet{
 	private LobbySettings settings;
 	
 	public LobbyUpdatePacket() {
-		if(factory == null)throw new NullPointerException("First you have to set a LobbySettingsFactory!");
+//		if(factory == null)throw new NullPointerException("First you have to set a LobbySettingsFactory!");
 	}
 	
 	public LobbyUpdatePacket(LobbySettings settings) {

@@ -1,6 +1,7 @@
 package main;
 
 import lombok.Getter;
+import main.api.packet.Packet;
 import main.lobby.LobbyController;
 import main.server.BroadcastServer;
 import main.terminal.Terminal;
@@ -11,6 +12,7 @@ public class Main {
 	public static LobbyController lobbyController;
 	
 	public static void main(String[] args) {
+		Packet.loadPackets();
 		Terminal.loadCommands();
 		Terminal.getInstance();
 		lobbyController = new LobbyController();

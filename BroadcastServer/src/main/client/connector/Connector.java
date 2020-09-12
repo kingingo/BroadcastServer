@@ -10,6 +10,7 @@ import java.util.UUID;
 import lombok.Getter;
 import main.Main;
 import main.api.events.EventManager;
+import main.api.events.events.ClientConnectEvent;
 import main.api.events.events.ClientDisconnectEvent;
 import main.api.events.events.PacketReceiveEvent;
 import main.api.events.events.PacketSendEvent;
@@ -74,20 +75,29 @@ public class Connector implements Runnable{
 	
 	public void run() {
 		try {
+			
 			while(this.input != null) {
-				int length = this.input.readInt();
-				int id = this.input.readInt();
-				
-				byte[] data = new byte[length];
-				this.input.read(data, 0, length);
-				
-				Packet packet = new UnknownPacket(id, data);
-				Main.log(this+" -> "+packet.getId() + "(bytes:"+packet.getData().length+")");
-				
-				for(int i = 0; i < this.listeners.size(); i++) 
-					if(this.listeners.get(i).handle(packet))break;
-				
-				EventManager.callEvent(new PacketReceiveEvent(packet,this));
+				if(this.input.available() > 0) {
+					if(this.name == null) {
+						this.name = this.input.readUTF();
+						Main.log(this + " is connected");
+						EventManager.callEvent(new ClientConnectEvent(this));
+					}else {
+						int length = this.input.readInt();
+						int id = this.input.readInt();
+						
+						byte[] data = new byte[length];
+						this.input.read(data, 0, length);
+						
+						Packet packet = new UnknownPacket(id, data);
+						Main.log(this+" -> "+packet.getId() + "(bytes:"+packet.getData().length+")");
+						
+						for(int i = 0; i < this.listeners.size(); i++) 
+							if(this.listeners.get(i).handle(packet))break;
+						
+						EventManager.callEvent(new PacketReceiveEvent(packet,this));
+					}
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -120,6 +130,6 @@ public class Connector implements Runnable{
 	}
 	
 	public String toString() {
-		return this.name != null ? this.socket.getInetAddress().toString() : this.name;
+		return this.name == null ? this.socket.getInetAddress().toString() : this.name;
 	}
 }

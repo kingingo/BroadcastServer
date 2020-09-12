@@ -3,6 +3,7 @@ package main.lobby;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import main.Main;
 import main.api.events.EventHandler;
 import main.api.events.EventListener;
 import main.api.events.EventManager;
@@ -19,6 +20,8 @@ public class LobbyController implements EventListener{
 	
 	public LobbyController() {
 		EventManager.register(this);
+		
+		createLobby("Lobby 1");
 	}
 	
 	public boolean closeLobby(String name) {
@@ -55,6 +58,7 @@ public class LobbyController implements EventListener{
 	@EventHandler
 	public void connect(ClientConnectEvent ev) {
 		ev.getConnector().write(new LobbyListPacket( new ArrayList<Lobby>(getLobbys().values()) ));
+		Main.log(ev.getConnector() + " send LobbyListPacket");
 	}
 
 	@EventHandler
