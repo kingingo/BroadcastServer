@@ -9,7 +9,7 @@ import main.api.events.events.ClientConnectEvent;
 
 public class PlayerClient extends Connector{
 
-	protected PlayerClient(String name, String host, int port) throws UnknownHostException, IOException {
+	public PlayerClient(String name, String host, int port) throws UnknownHostException, IOException {
 		super(new Socket(host, port));
 		this.name = name;
 		this.output.writeUTF(this.name);
