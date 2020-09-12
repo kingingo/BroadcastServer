@@ -50,6 +50,10 @@ public class EventManager {
 	public static void callEvent(final Event event) {
         for (EventListener listener : getHandlers().keySet()) {
             for (int i = 0; i<EventPriority.values().length; i++) {
+
+            		if(listener==null)System.out.println("listener NULL");
+            		if(getHandlers().get(listener).containsKey(i) && getHandlers().get(listener).get(i) == null)System.out.println("getHandlers().get(listener).get(i) NULL");
+            	
             		if(getHandlers().get(listener).containsKey(i) && !getHandlers().get(listener).get(i).isEmpty()){
             			for(Method method : getHandlers().get(listener).get(i)){
             				if (!event.getClass().getSimpleName().equals(method.getParameterTypes()[0].getSimpleName())) continue;
