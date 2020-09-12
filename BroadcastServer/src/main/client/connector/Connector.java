@@ -82,7 +82,7 @@ public class Connector implements Runnable{
 						this.name = this.input.readUTF();
 						Main.log(this + " is connected");
 						EventManager.callEvent(new ClientConnectEvent(this));
-					}else {
+					} else {
 						int length = this.input.readInt();
 						int id = this.input.readInt();
 						

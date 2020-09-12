@@ -13,12 +13,11 @@ import main.lobby.Lobby;
 public class LobbyListPacket extends Packet{
 	
 	@Getter
-	private HashMap<String,Integer> lobbys;
+	private HashMap<String,Integer> lobbys = new HashMap<String,Integer>();
 	
 	public LobbyListPacket() {}
 	
 	public LobbyListPacket(ArrayList<Lobby> lobbys) {
-		this.lobbys = new HashMap<String,Integer>();
 		lobbys.forEach(lobby -> {this.lobbys.put(lobby.getName(), lobby.getClients().size());});
 	}
 	
