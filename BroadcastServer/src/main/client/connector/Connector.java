@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 import lombok.Getter;
@@ -37,14 +38,29 @@ public abstract class Connector implements Runnable{
 	protected UUID uuid = UUID.randomUUID();
 	protected Thread thread;
 	
+	private HashMap<Class<? extends Packet>, ArrayList<Packet>> packetQueue = new HashMap<>();
+	
 	protected Connector(Socket socket) throws IOException {
 		this.socket = socket;
 		this.input = new DataInputStream(this.socket.getInputStream());
 		this.output = new DataOutputStream(this.socket.getOutputStream());
 	}
 	
+	public void addToQueue(Class<? extends Packet> clazz) {
+		if(!this.packetQueue.containsKey(clazz))
+			this.packetQueue.put(clazz, new ArrayList<Packet>());
+	}
+	
 	public <T extends Packet> WaitForPacketProgressFuture<T> createWaitFor(Class<? extends Packet> clazz){
 		WaitForPacketProgressFuture<T> waitFor = new WaitForPacketProgressFuture<T>(1000 * 60 * 2,this, clazz); //2min TimeOut Default
+		
+		if(this.packetQueue.containsKey(clazz)) {
+			waitFor.handle(this.packetQueue.get(clazz).get(0));
+			this.packetQueue.get(clazz).remove(0);
+		}else {
+			this.listeners.add(waitFor);
+		}
+		
 		return waitFor;
 	}
 	
@@ -100,8 +116,21 @@ public abstract class Connector implements Runnable{
 							
 							Packet packet = Packet.create(id, data);
 							
-							for(int i = 0; i < this.listeners.size(); i++) 
-								if(this.listeners.get(i).handle(packet))break;
+							if(!this.listeners.isEmpty()) {
+								boolean handled = false;
+								for(int i = 0; i < this.listeners.size(); i++) 
+									if(this.listeners.get(i).handle(packet)) {
+										this.listeners.remove(i);
+										handled=true;
+										break;
+									}
+								
+								if(!handled && this.packetQueue.containsKey(packet.getClass())) {
+									this.packetQueue.get(packet).add(packet);
+								} else {
+									continue;
+								}
+							}
 							
 							EventManager.callEvent(new PacketReceiveEvent(packet,this));
 						}catch(NegativeArraySizeException e) {
