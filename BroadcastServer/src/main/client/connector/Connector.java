@@ -16,11 +16,11 @@ import main.api.events.events.ClientDisconnectEvent;
 import main.api.events.events.PacketReceiveEvent;
 import main.api.events.events.PacketSendEvent;
 import main.api.packet.Packet;
+import main.client.Client;
+import main.client.PingManager;
 import main.client.connector.futures.WaitForPacketProgressFuture;
-import main.lobby.packets.client.PongPacket;
-import main.lobby.packets.server.PingPacket;
 
-public class Connector implements Runnable{
+public abstract class Connector implements Runnable{
 
 	public static boolean log = false;
 	
@@ -67,8 +67,6 @@ public class Connector implements Runnable{
 	}
 	
 	public void close() {
-		System.out.println("CLOSEE!!!! "+getName());
-		
 		if(active) {
 			this.active=false;
 			try {
@@ -85,8 +83,7 @@ public class Connector implements Runnable{
 	public void run() {
 		try {
 			while(active && this.input != null) {
-				if(!this.socket.isConnected()) {
-					System.out.println("LOST CONNECTION TO "+getName());
+				if(!this.socket.isConnected() || this instanceof Client && ((Client)this).getPingManager().getCurrentPing() > 1000 * 3) {
 					close();
 					break;
 				}else if(this.input.available() > 0) {

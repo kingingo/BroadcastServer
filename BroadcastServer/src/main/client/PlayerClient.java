@@ -9,7 +9,11 @@ import main.api.events.events.ClientConnectEvent;
 import main.client.connector.Connector;
 
 public class PlayerClient extends Connector{
+	public static PlayerClientListener listener = new PlayerClientListener();
 
+	public long lastPing;
+	public long lastPingTime;
+	
 	public PlayerClient(String name, String host, int port) throws UnknownHostException, IOException {
 		super(new Socket(host, port));
 		this.name = name;

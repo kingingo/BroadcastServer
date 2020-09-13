@@ -24,9 +24,11 @@ public abstract class Packet implements IData{
 	private static final HashMap<String, Integer> packet_ids = new HashMap<>();
 	@Getter
 	private static int packetIdMax =1;
+	private static int lastId = 0;
 	
 	public static void loadPackets(){
 		loadPackets("main.lobby.packets");
+		loadPackets("main.client.packets");
 	}	
 	
 	public static void loadPackets(String path) {
@@ -39,12 +41,11 @@ public abstract class Packet implements IData{
 		        return o1.getSimpleName().compareTo(o2.getSimpleName());
 		    }
 		});
-		int id=0;
 		for ( Class<? extends Packet> clazz : moduleClasses ){
 			if(clazz == UnknownPacket.class)continue;
 			try {
-				packet_ids.put(clazz.newInstance().getPacketName(), id++);
-				packets.put((id-1)+"", clazz);
+				packet_ids.put(clazz.newInstance().getPacketName(), lastId++);
+				packets.put((lastId-1)+"", clazz);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -52,7 +53,7 @@ public abstract class Packet implements IData{
 			}
 			
 		}
-		packetIdMax=id-1;
+		packetIdMax=lastId-1;
 		for(String packet : packet_ids.keySet())Main.log(packet+" -> "+packet_ids.get(packet));
 	}
 	

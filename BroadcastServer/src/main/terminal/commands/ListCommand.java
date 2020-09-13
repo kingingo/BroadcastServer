@@ -18,11 +18,12 @@ public class ListCommand implements CommandExecutor{
 		int length = 0;
 		String add;
 		for(int i = 0; i < list.size(); i++) {
+			String name = list.get(i).getName()+"("+list.get(i).getPingManager().getCurrentPing()+"ms)";
 			if(i == list.size()-1){
-				add = list.get(i).getName();
+				add = name;
 			}else if(i == list.size()-2) {
-				add = list.get(i).getName()+" & ";
-			}else add = list.get(i).getName()+",";
+				add = name+" & ";
+			}else add = name+",";
 			
 			length+=add.length();
 			builder.append(add);
