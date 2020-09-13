@@ -1,6 +1,7 @@
 package main.lobby;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import lombok.Getter;
@@ -32,18 +33,22 @@ public class Lobby{
 	}
 	
 	public void leave(Client client) {
-		Main.log(client+" left "+getName());
-		client.setLobby(null);
-		this.clients.remove(client);
-		if(client.getName().equalsIgnoreCase(owner)) {
-			write(new LobbyClosePacket());
-			for(Client c : this.clients)
-				c.setLobby(null);
-		this.clients.clear();
-			Main.lobbyController.closeLobby(name);
-		}else if(this.clients.isEmpty()) {
-			Main.lobbyController.closeLobby(name);
-		}else write(new LobbyPlayersPacket(getName(), getOwner(), getClientnames()));
+		try {
+			Main.log(client+" left "+getName());
+			client.setLobby(null);
+			this.clients.remove(client);
+			if(client.getName().equalsIgnoreCase(owner)) {
+				write(new LobbyClosePacket());
+				for(Client c : this.clients)
+					c.setLobby(null);
+			this.clients.clear();
+				Main.lobbyController.closeLobby(name);
+			}else if(this.clients.isEmpty()) {
+				Main.lobbyController.closeLobby(name);
+			}else write(new LobbyPlayersPacket(getName(), getOwner(), getClientnames()));
+		}catch(ConcurrentModificationException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void enter(Client client) {

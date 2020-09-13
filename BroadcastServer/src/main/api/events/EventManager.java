@@ -69,7 +69,7 @@ public class EventManager {
                             try {
                                 method.invoke(listener, new Object[]{event});
                             } catch (Exception e) {
-                            	System.out.println("Method: "+method.getName()+"\nEvent: "+event.getClass().getSimpleName()+"\nListener: "+listener.getClass().getSimpleName()+"n");
+                            	System.out.println("Method: "+method.getName()+"\nEvent: "+event.getClass().getSimpleName()+"\nListener: "+listener.getClass().getSimpleName()+"\n");
                                 e.printStackTrace();
                             }
             			}
