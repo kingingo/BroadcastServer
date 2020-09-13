@@ -125,11 +125,10 @@ public abstract class Connector implements Runnable{
 										break;
 									}
 								
-								if(!handled && this.packetQueue.containsKey(packet.getClass())) {
-									this.packetQueue.get(packet).add(packet);
-								} else {
-									continue;
-								}
+								if(!handled) {
+									if(this.packetQueue.containsKey(packet.getClass()))
+										this.packetQueue.get(packet.getClass()).add(packet);
+								}else continue;
 							}
 							
 							EventManager.callEvent(new PacketReceiveEvent(packet,this));
