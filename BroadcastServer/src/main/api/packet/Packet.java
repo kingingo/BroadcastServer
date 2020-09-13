@@ -117,7 +117,7 @@ public abstract class Packet implements IData{
 			if(packet.toByteArray().length == data.length) {
 				return (T) packet;
 			}else {
-				Main.log("The length doesn't suit to the packet... "+packet.toByteArray().length+" != "+data.length);
+				Main.log("The length doesn't suit to the packet ("+clazz.getSimpleName()+")... "+packet.toByteArray().length+" != "+data.length);
 			}
 		} catch (InstantiationException e) {
 			e.printStackTrace();
