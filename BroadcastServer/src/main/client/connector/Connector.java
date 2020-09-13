@@ -94,16 +94,21 @@ public abstract class Connector implements Runnable{
 					} else {
 						int length = this.input.readInt();
 						int id = this.input.readInt();
-						
-						byte[] data = new byte[length];
-						this.input.read(data, 0, length);
-						
-						Packet packet = Packet.create(id, data);
-						
-						for(int i = 0; i < this.listeners.size(); i++) 
-							if(this.listeners.get(i).handle(packet))break;
-						
-						EventManager.callEvent(new PacketReceiveEvent(packet,this));
+						try {
+							byte[] data = new byte[length];
+							this.input.read(data, 0, length);
+							
+							Packet packet = Packet.create(id, data);
+							
+							for(int i = 0; i < this.listeners.size(); i++) 
+								if(this.listeners.get(i).handle(packet))break;
+							
+							EventManager.callEvent(new PacketReceiveEvent(packet,this));
+						}catch(NegativeArraySizeException e) {
+							System.out.println("LENGTH: "+length+" "+id);
+							e.printStackTrace();
+							throw new NegativeArraySizeException();
+						}
 					}
 				}else {
 					Thread.sleep(10);
