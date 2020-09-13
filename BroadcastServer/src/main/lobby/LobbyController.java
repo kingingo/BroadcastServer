@@ -114,7 +114,7 @@ public class LobbyController implements EventListener{
 					client.write(new LobbyErrorPacket(LobbyErrorPacket.NAME_ALREADY_TAKEN));
 				}
 			}
-		}else {
+		} else {
 			Lobby lobby = client.getLobby();
 			
 			if(ev.getPacket() instanceof LobbyLeavePacket){
