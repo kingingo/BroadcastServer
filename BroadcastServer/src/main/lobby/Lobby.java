@@ -29,7 +29,10 @@ public class Lobby{
 	}
 	
 	public void close() {
-		//CLOSE PACKET
+		write(new LobbyClosePacket());
+		for(int i = 0; i < this.clients.size(); i++)
+			this.clients.get(i).setLobby(null);
+		this.clients.clear();
 	}
 	
 	public void leave(Client client) {
@@ -38,10 +41,6 @@ public class Lobby{
 			client.setLobby(null);
 			this.clients.remove(client);
 			if(client.getName().equalsIgnoreCase(owner)) {
-				write(new LobbyClosePacket());
-				for(int i = 0; i < this.clients.size(); i++)
-					this.clients.get(i).setLobby(null);
-			this.clients.clear();
 				Main.lobbyController.closeLobby(name);
 			}else if(this.clients.isEmpty()) {
 				Main.lobbyController.closeLobby(name);
@@ -82,10 +81,8 @@ public class Lobby{
 	}
 	
 	public void write(final Packet packet, List<Client> blacklist) {
-		this.clients.forEach(client -> {
-			if(blacklist==null || !blacklist.contains(client)) {
-				client.write(packet);
-			}
-		});;
+		for(int i = 0; i < this.clients.size(); i++) 
+			if(blacklist==null || !blacklist.contains(this.clients.get(i))) 
+				this.clients.get(i).write(packet);
 	}
 }
