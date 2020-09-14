@@ -39,8 +39,8 @@ public class Lobby{
 			this.clients.remove(client);
 			if(client.getName().equalsIgnoreCase(owner)) {
 				write(new LobbyClosePacket());
-				for(Client c : this.clients)
-					c.setLobby(null);
+				for(int i = 0; i < this.clients.size(); i++)
+					this.clients.get(i).setLobby(null);
 			this.clients.clear();
 				Main.lobbyController.closeLobby(name);
 			}else if(this.clients.isEmpty()) {
