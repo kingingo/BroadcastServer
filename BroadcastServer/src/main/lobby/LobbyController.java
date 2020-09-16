@@ -126,6 +126,7 @@ public class LobbyController implements EventListener{
 				lobby.setSettings(packet.getArr());
 				lobby.update(Arrays.asList(client));
 			} else if(!Packet.KnowPacket(ev.getPacket())){
+				Main.log("Got Packet from "+ev.getConnector().getName()+" send to lobby "+lobby.getName());
 				lobby.write(ev.getPacket(), Arrays.asList(client));
 			}
 		}

@@ -28,6 +28,6 @@ public class LobbyUpdatePacket extends Packet{
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
 		out.writeInt(arr.length);
-		out.write(arr);
+		out.write(arr, 0, arr.length);
 	}
 }
