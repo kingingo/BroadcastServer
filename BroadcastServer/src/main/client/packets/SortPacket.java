@@ -4,11 +4,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import lombok.Getter;
 import main.api.packet.Packet;
 
 public class SortPacket extends Packet{
 
+	@Getter
 	private int order;
+	@Getter
 	private Packet packet;
 	
 	public SortPacket() {}
