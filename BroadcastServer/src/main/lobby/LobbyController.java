@@ -122,6 +122,11 @@ public class LobbyController implements EventListener{
 				update();
 			}else if(ev.getPacket() instanceof LobbyUpdatePacket){
 				LobbyUpdatePacket packet = (LobbyUpdatePacket)ev.getPacket();
+				
+				String m = "";
+				for(byte b : packet.toByteArray())m+=b;
+				System.out.println(m);
+				
 				Main.log(lobby.getName()+" update settings to all clients!");
 				lobby.setSettings(packet.getArr());
 				lobby.update(Arrays.asList(client));
