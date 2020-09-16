@@ -16,6 +16,7 @@ public class LobbyErrorPacket extends Packet{
 	public static final int FULL = 1;
 	public static final int NOT_FOUND = 2;
 	public static final int NAME_ALREADY_TAKEN = 3;
+	public static final int CLOSED = 4;
 	
 	@Getter
 	private int status;

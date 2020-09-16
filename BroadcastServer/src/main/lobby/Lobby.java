@@ -51,6 +51,11 @@ public class Lobby{
 	}
 	
 	public void enter(Client client) {
+		if(!isOpen()) {
+			client.write(new LobbyErrorPacket(LobbyErrorPacket.CLOSED));
+			return;
+		}
+		
 		if(clients.size()>=7) {
 			client.write(new LobbyErrorPacket(LobbyErrorPacket.FULL));
 			return;
