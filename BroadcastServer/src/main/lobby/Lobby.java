@@ -44,7 +44,7 @@ public class Lobby{
 				Main.lobbyController.closeLobby(name);
 			}else if(this.clients.isEmpty()) {
 				Main.lobbyController.closeLobby(name);
-			}else write(new LobbyPlayersPacket(getName(), getOwner(), getClientnames()));
+			}else write(new LobbyPlayersPacket(getName(), isOpen(), getOwner(), getClientnames()));
 		}catch(ConcurrentModificationException e) {
 			e.printStackTrace();
 		}
@@ -63,7 +63,7 @@ public class Lobby{
 		Main.log(client+" entered "+name);
 		client.setLobby(this);
 		this.clients.add(client);
-		write(new LobbyPlayersPacket(name,owner, getClientnames()));
+		write(new LobbyPlayersPacket(name,open,owner, getClientnames()));
 	}
 	
 	public ArrayList<String> getClientnames(){
