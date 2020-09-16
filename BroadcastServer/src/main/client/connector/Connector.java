@@ -20,6 +20,7 @@ import main.api.packet.Packet;
 import main.client.Client;
 import main.client.PingManager;
 import main.client.connector.futures.WaitForPacketProgressFuture;
+import main.client.connector.futures.WaitForSortPacketProgressFuture;
 
 public abstract class Connector implements Runnable{
 
@@ -49,6 +50,19 @@ public abstract class Connector implements Runnable{
 	public void addToQueue(Class<? extends Packet> clazz) {
 		if(!this.packetQueue.containsKey(clazz))
 			this.packetQueue.put(clazz, new ArrayList<Packet>());
+	}
+	
+	public <T extends Packet> WaitForSortPacketProgressFuture<T> createWaitForSort(Class<? extends Packet> clazz,int order){
+		WaitForSortPacketProgressFuture<T> waitFor = new WaitForSortPacketProgressFuture<T>(1000 * 60 * 2,this, clazz,order); //2min TimeOut Default
+		
+		if(this.packetQueue.containsKey(clazz) && !this.packetQueue.get(clazz).isEmpty()) {
+			waitFor.handle(this.packetQueue.get(clazz).get(0));
+			this.packetQueue.get(clazz).remove(0);
+		}else {
+			this.listeners.add(waitFor);
+		}
+		
+		return waitFor;
 	}
 	
 	public <T extends Packet> WaitForPacketProgressFuture<T> createWaitFor(Class<? extends Packet> clazz){
