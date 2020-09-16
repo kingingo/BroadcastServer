@@ -26,10 +26,14 @@ public abstract class Connector implements Runnable{
 	
 	@Getter
 	protected Socket socket;
+	@Getter
 	private boolean active = false;
 	
 	protected DataInputStream input;
 	protected DataOutputStream output;
+	
+	protected WriterThread writer;
+	
 	private ArrayList<PacketListener> listeners = new ArrayList<PacketListener>();
 	
 	@Getter
@@ -43,6 +47,11 @@ public abstract class Connector implements Runnable{
 		this.socket = socket;
 		this.input = new DataInputStream(this.socket.getInputStream());
 		this.output = new DataOutputStream(this.socket.getOutputStream());
+		this.writer = new WriterThread(this, this.output);
+	}
+	
+	public void write(Packet packet) {
+		this.writer.write(packet);
 	}
 	
 	public void addToQueue(Class<? extends Packet> clazz) {
@@ -79,6 +88,7 @@ public abstract class Connector implements Runnable{
 		this.active = true;
 		this.thread = new Thread(this);
 		this.thread.start();
+		this.writer.start();
 	}
 	
 	public void close() {
@@ -152,27 +162,6 @@ public abstract class Connector implements Runnable{
 	
 	public boolean equals(Connector con) {
 		return uuid.compareTo(con.uuid) == 0;
-	}
-	
-	public boolean write(Packet packet) {
-		try {
-			PacketSendEvent event = new PacketSendEvent(packet, this);
-			EventManager.callEvent(event);
-			
-			if(!event.isCancelled()) {
-				byte[] packetBytes = packet.toByteArray();
-				this.output.writeInt(packetBytes.length);
-				this.output.writeInt(packet.getId());
-				this.output.write(packetBytes, 0, packetBytes.length);
-				this.output.flush();
-				return true;
-			}
-		}catch (SocketException e) {
-			close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
 	}
 	
 	public String toString() {
