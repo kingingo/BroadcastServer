@@ -16,23 +16,19 @@ public class LobbyPlayersPacket extends Packet{
 	@Getter
 	private String owner;
 	@Getter
-	private boolean open;
-	@Getter
 	private ArrayList<String> players;
 	
 	public LobbyPlayersPacket() {}
 	
-	public LobbyPlayersPacket(String name,boolean open,String owner,ArrayList<String> players) {
+	public LobbyPlayersPacket(String name,String owner,ArrayList<String> players) {
 		this.players=players;
 		this.name=name;
-		this.open = open;
 		this.owner = owner;
 	}
 	
 	@Override
 	public void parseFromInput(DataInputStream in) throws IOException {
 		this.players = new ArrayList<String>();
-		this.open = in.readBoolean();
 		this.owner = in.readUTF();
 		this.name = in.readUTF();
 		int length = in.readInt();
@@ -42,7 +38,6 @@ public class LobbyPlayersPacket extends Packet{
 
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
-		out.writeBoolean(this.open);
 		out.writeUTF(owner);
 		out.writeUTF(name);
 		out.writeInt(players.size());
