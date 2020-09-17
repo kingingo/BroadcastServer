@@ -14,6 +14,7 @@ public class Main {
 	public static ClientListener listener;
 	
 	public static void main(String[] args) {
+		Log.init();
 		Packet.loadPackets();
 		Terminal.loadCommands();
 		Terminal.getInstance();

@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -15,7 +14,6 @@ import main.api.events.EventManager;
 import main.api.events.events.ClientConnectEvent;
 import main.api.events.events.ClientDisconnectEvent;
 import main.api.events.events.PacketReceiveEvent;
-import main.api.events.events.PacketSendEvent;
 import main.api.packet.Packet;
 import main.client.Client;
 import main.client.connector.futures.WaitForPacketProgressFuture;
@@ -119,33 +117,37 @@ public abstract class Connector implements Runnable{
 					} else {
 						int length = this.input.readInt();
 						int id = this.input.readInt();
-						try {
-							byte[] data = new byte[length];
-							this.input.read(data, 0, length);
-							
-							Packet packet = Packet.create(id, data);
-							
-							if(!this.listeners.isEmpty()) {
-								boolean handled = false;
-								for(int i = 0; i < this.listeners.size(); i++) 
-									if(this.listeners.get(i).handle(packet)) {
-										this.listeners.remove(i);
-										handled=true;
-										break;
-									}
-								
-								if(!handled) {
-									if(this.packetQueue.containsKey(packet.getClass()))
-										this.packetQueue.get(packet.getClass()).add(packet);
-								}else continue;
-							}
-							
-							EventManager.callEvent(new PacketReceiveEvent(packet,this));
-						}catch(NegativeArraySizeException e) {
-							System.out.println("LENGTH: "+length+" "+id);
-							e.printStackTrace();
-							throw new NegativeArraySizeException();
+						
+						byte[] data = new byte[length];
+						this.input.read(data, 0, length);
+						int zero = 0;
+						for(byte b : data) {
+							if(b == 0) {
+								zero++;
+							}else zero = 0;
 						}
+						if(id != 8 && id != 9)
+							Main.log(getName()+ " -> READ ID:"+id+" LENGTH:"+length+" ZEROS:"+zero);
+						
+						
+						Packet packet = Packet.create(id, data);
+						
+						if(!this.listeners.isEmpty()) {
+							boolean handled = false;
+							for(int i = 0; i < this.listeners.size(); i++) 
+								if(this.listeners.get(i).handle(packet)) {
+									this.listeners.remove(i);
+									handled=true;
+									break;
+								}
+							
+							if(!handled) {
+								if(this.packetQueue.containsKey(packet.getClass()))
+									this.packetQueue.get(packet.getClass()).add(packet);
+							}else continue;
+						}
+						
+						EventManager.callEvent(new PacketReceiveEvent(packet,this));
 					}
 				}else {
 					Thread.sleep(10);

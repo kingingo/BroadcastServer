@@ -16,7 +16,6 @@ import main.client.Client;
 import main.lobby.packets.client.LobbyCreatePacket;
 import main.lobby.packets.client.LobbyEnterPacket;
 import main.lobby.packets.client.LobbyLeavePacket;
-import main.lobby.packets.client.LobbyUpdatePacket;
 import main.lobby.packets.server.LobbyErrorPacket;
 import main.lobby.packets.server.LobbyListPacket;
 
@@ -120,17 +119,19 @@ public class LobbyController implements EventListener{
 			if(ev.getPacket() instanceof LobbyLeavePacket){
 				lobby.leave(client);
 				update();
-			}else if(ev.getPacket() instanceof LobbyUpdatePacket){
-				LobbyUpdatePacket packet = (LobbyUpdatePacket)ev.getPacket();
-				
-				String m = "";
-				for(byte b : packet.toByteArray())m+=b;
-				System.out.println(m);
-				
-				Main.log(lobby.getName()+" update settings to all clients!");
-				lobby.setSettings(packet.getArr());
-				lobby.update(Arrays.asList(client));
-			} else if(!Packet.KnowPacket(ev.getPacket())){
+			}
+//			else if(ev.getPacket() instanceof LobbyUpdatePacket){
+//				LobbyUpdatePacket packet = (LobbyUpdatePacket)ev.getPacket();
+//				
+//				String m = "";
+//				for(byte b : packet.toByteArray())m+=b;
+//				System.out.println(m);
+//				
+//				Main.log(lobby.getName()+" update settings to all clients!");
+//				lobby.setSettings(packet.getArr());
+//				lobby.update(Arrays.asList(client));
+//			} 
+			else if(!Packet.KnowPacket(ev.getPacket())){
 				Main.log("Got Packet from "+ev.getConnector().getName()+" send to lobby "+lobby.getName());
 				lobby.write(ev.getPacket(), Arrays.asList(client));
 			}

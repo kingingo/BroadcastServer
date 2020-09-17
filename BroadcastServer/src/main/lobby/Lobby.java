@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import main.Main;
 import main.api.packet.Packet;
+import main.api.packet.UnknownPacket;
 import main.client.Client;
-import main.lobby.packets.client.LobbyUpdatePacket;
 import main.lobby.packets.server.LobbyClosePacket;
 import main.lobby.packets.server.LobbyErrorPacket;
 import main.lobby.packets.server.LobbyPlayersPacket;
@@ -22,7 +22,7 @@ public class Lobby{
 	private String owner;
 	private boolean open = true;
 	@Setter
-	private byte[] settings;
+	private UnknownPacket updatePacket;
 	
 	public Lobby(String name) {
 		this.name = name;
@@ -78,7 +78,7 @@ public class Lobby{
 	}
 	
 	public void update(List<Client> blacklist) {
-		write(new LobbyUpdatePacket(settings),blacklist);
+		write(updatePacket,blacklist);
 	}
 	
 	public void write(final Packet packet) {

@@ -41,11 +41,13 @@ public abstract class Packet implements IData{
 		        return o1.getSimpleName().compareTo(o2.getSimpleName());
 		    }
 		});
+		String packetname;
 		for ( Class<? extends Packet> clazz : moduleClasses ){
 			if(clazz == UnknownPacket.class)continue;
 			try {
-				packet_ids.put(clazz.newInstance().getPacketName(), lastId++);
+				packet_ids.put(packetname = clazz.newInstance().getPacketName(), lastId++);
 				packets.put((lastId-1)+"", clazz);
+				Main.log(packetname+" -> "+(lastId-1));
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -54,7 +56,6 @@ public abstract class Packet implements IData{
 			
 		}
 		packetIdMax=lastId-1;
-		for(String packet : packet_ids.keySet())Main.log(packet+" -> "+packet_ids.get(packet));
 	}
 	
 	public static int getId(Class<? extends Packet> clazz) {

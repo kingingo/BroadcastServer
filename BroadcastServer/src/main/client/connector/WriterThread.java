@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import main.Main;
 import main.api.events.EventManager;
 import main.api.events.events.PacketSendEvent;
 import main.api.packet.Packet;
@@ -77,6 +78,14 @@ public class WriterThread implements Runnable{
 			
 			if(!event.isCancelled()) {
 				byte[] packetBytes = packet.toByteArray();
+				int zero = 0;
+				for(byte b : packetBytes) {
+					if(b == 0) {
+						zero++;
+					}else zero = 0;
+				}
+				if(packet.getId() != 8 && packet.getId() != 9)
+				Main.log(connector.getName() + " -> WRITE ID:"+packet.getId()+" LENGTH:"+packetBytes.length+" ZEROS:"+zero);
 				this.output.writeInt(packetBytes.length);
 				this.output.writeInt(packet.getId());
 				this.output.write(packetBytes, 0, packetBytes.length);
