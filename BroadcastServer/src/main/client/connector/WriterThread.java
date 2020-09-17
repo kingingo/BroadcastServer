@@ -9,6 +9,8 @@ import main.Main;
 import main.api.events.EventManager;
 import main.api.events.events.PacketSendEvent;
 import main.api.packet.Packet;
+import main.client.packets.PingPacket;
+import main.client.packets.PongPacket;
 
 public class WriterThread implements Runnable{
 
@@ -84,8 +86,8 @@ public class WriterThread implements Runnable{
 						zero++;
 					}else zero = 0;
 				}
-				if(packet.getId() != 8 && packet.getId() != 9)
-				Main.log(connector.getName() + " -> WRITE ID:"+packet.getId()+" LENGTH:"+packetBytes.length+" ZEROS:"+zero);
+				if(packet.getId() != Packet.getId(PingPacket.class) &&  Packet.getId(PongPacket.class) != packet.getId())
+					Main.log(connector.getName() + " -> WRITE ID:"+packet.getId()+" LENGTH:"+packetBytes.length+" ZEROS:"+zero);
 				this.output.writeInt(packetBytes.length);
 				this.output.writeInt(packet.getId());
 				this.output.write(packetBytes, 0, packetBytes.length);

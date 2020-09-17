@@ -17,9 +17,10 @@ import main.api.events.events.PacketReceiveEvent;
 import main.api.packet.Packet;
 import main.client.Client;
 import main.client.connector.futures.WaitForPacketProgressFuture;
+import main.client.packets.PingPacket;
+import main.client.packets.PongPacket;
 
 public abstract class Connector implements Runnable{
-
 	public static boolean log = false;
 	
 	@Getter
@@ -126,7 +127,7 @@ public abstract class Connector implements Runnable{
 								zero++;
 							}else zero = 0;
 						}
-						if(id != 8 && id != 9)
+						if(id != Packet.getId(PingPacket.class) &&  Packet.getId(PongPacket.class) != id)
 							Main.log(getName()+ " -> READ ID:"+id+" LENGTH:"+length+" ZEROS:"+zero);
 						
 						
